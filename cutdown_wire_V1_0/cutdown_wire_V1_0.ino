@@ -15,24 +15,28 @@
 // Declares what pin to use as output. change this value to to change what output pin is used.
 int output_pin = 9;
 
+long int seconds = 1000;
+long int minutes = 60;
+long int FlightTime = 1 * seconds; //Put number of minutes for flight before cutdown occurs.
 
 void setup()
-{
+{    
+  pinMode(output_pin , OUTPUT); // Sets pin 9 to the nichrome as output.
+  digitalWrite(output_pin, LOW); // initializes pin 9 to low.
   
-  //sets output_pin as an output pin
-  pinMode(output_pin , OUTPUT);
-  digitalWrite(output_pin, LOW);
   // set pin 2 as an interupt pin on the rising edge and executes the 
   // cutdown function
-  attachInterrupt(0, cutdown, RISING);
+  
+  attachInterrupt(0, cutdown, RISING); //set pin 5 as interupt pin from iridium.
+  
+  
+  
 }
 
 void loop()
-{
-  int time = millis();
-  //time before cutdown
-  while(( millis() - time)/1000 < 5 );
-  //delay(5000); 
+{  
+  //digitalWrite(7,HIGH);
+  while( millis()  < FlightTime ); // millis() returns the number of milliseconds the program has be running.  
 
   //Executes cutdown sequence.
   cutdown();
@@ -44,27 +48,27 @@ void loop()
 /*******************************************************************
  * NAME :            cutdown()
  *
- * DESCRIPTION :     Sets output pin to HIGH (5V) for 10 seconds then back to LOW (0V)
+ * DESCRIPTION :     Sets output pin to HIGH (3.3V) for 10 seconds then back to LOW (0V)
  *
  *
  * CHANGES :
  * DATE		    		WHO     			DETAIL
  * 12.Nov.2014      	Tom Haney			Orginal
  *       
- */
+ ********************************************************************/
 
 void cutdown()
 {
-  // signal for mosfet to turn on is set to 5V
+  // Outputs 3.3 V signal to mosfet.
   digitalWrite(output_pin, HIGH);
-  digitalWrite(13, HIGH);
+  digitalWrite(13, HIGH); //led indicats nichrome should be on.
+  
   //druation for cutdown system to be on set to 10 seconds
-  int time = millis();
-  //time before cutdown
-  while((millis() - time)/1000 < 15 );
-  //delay(10000);
+  long int time = millis();  
+  
+  while((millis() - time)/1000 < 10 );  
 
-  // signal for mosfet to turn off is set to 0V
+   //signal for mosfet to turn off is set to 0V
   digitalWrite(output_pin, LOW);
   digitalWrite(13, LOW);
 }
